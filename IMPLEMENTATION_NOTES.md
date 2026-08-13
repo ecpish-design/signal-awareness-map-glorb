@@ -46,3 +46,8 @@ No high-value image assets were changed.
 - Printable help cards now use 6 cards per portrait page, preventing cards from being cut across page boundaries.
 - Raw-answer PDFs use deliberate continuation pages for longer feeling sections so headings/tables are not split unpredictably.
 - Print styles now match the A4 landscape full-report export.
+
+### Pressure intro overlap hotfix
+- Constrained the `Explore What Can Make Things Harder` intro copy to its own grid column.
+- Reduced the rating-strip visual at laptop/iPad widths so it cannot cover explanatory text.
+- Added a stacked mobile fallback below 760px.

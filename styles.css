@@ -950,3 +950,42 @@ h1, h2, h3, p { margin-top: 0; }
     padding: 10mm 12mm !important;
   }
 }
+
+/* === AUG 13 PRESSURE INTRO TEXT-OVERLAP HOTFIX ===
+   Keep all explanatory copy in its own column so the rating-scale visual
+   can never cover or sit on top of text at school-laptop/iPad widths. */
+.pressure-welcome-card .transition-copy {
+  min-width: 0;
+  overflow: hidden;
+}
+.pressure-welcome-card .transition-copy p {
+  width: 100%;
+  max-width: 100%;
+  overflow-wrap: break-word;
+}
+
+@media (max-width: 1180px) {
+  .pressure-welcome-card {
+    grid-template-columns: minmax(0, 1fr) 210px;
+    gap: 28px;
+    padding: clamp(28px, 4vw, 42px);
+  }
+  .pressure-welcome-card .rating-strip-chip {
+    width: 210px !important;
+    max-width: 210px;
+    height: 160px !important;
+    justify-self: end;
+  }
+}
+
+@media (max-width: 760px) {
+  .pressure-welcome-card {
+    display: block;
+  }
+  .pressure-welcome-card .rating-strip-chip {
+    width: 100% !important;
+    max-width: 100%;
+    height: 150px !important;
+    margin: 18px 0 22px;
+  }
+}
