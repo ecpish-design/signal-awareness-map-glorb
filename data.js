@@ -38,8 +38,8 @@ window.GLORB_DATA = (() => {
     },
     rising: {
       id: 'rising', label: 'RISING SIGNAL', overview: A(5), className: 'rising',
-      studentDescription: 'Energy, tension or urgency may be building.',
-      adultDescription: 'Activation, tension or urgency may be increasing. Early help can be useful here.'
+      studentDescription: 'You may notice early changes in your body, thoughts, feelings or behaviour.',
+      adultDescription: 'The student may notice early changes in their body, thoughts, feelings or behaviour. Things may be starting to feel harder, and early help can be useful here.'
     },
     overload: {
       id: 'overload', label: 'SIGNAL OVERLOAD', overview: A(6), className: 'overload',

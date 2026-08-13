@@ -27,7 +27,7 @@ There is no build step, package manager or server-side application.
 - Student responses are held in JavaScript memory for the current open page only.
 - The app does not use `localStorage`, cookies or an account to persist student response content.
 - Refreshing, starting over or leaving the page removes the current in-page responses.
-- The interface therefore warns users to **Download PDF**, **Print**, or **Share Report** before leaving.
+- The interface therefore warns users to **Download ZIP**, **Print**, or **Share Report** before leaving.
 - Web Share is used only when the browser supports sharing a generated PDF file. There is no email-address field.
 - The PDF is generated in the browser using `html2pdf.js` loaded from cdnjs with Subresource Integrity. If that library cannot load, **Print → Save as PDF** remains the fallback.
 
@@ -63,3 +63,16 @@ External research links open in a new tab so the current unsaved map is not repl
 The adult information page links to ACARA, AERO, ABS, W3C, NCTSN and peer-reviewed research. See `RESEARCH.md` for the reference list.
 
 GLORB // Signal Mapper is presented as a student self-identification and communication resource. Its Signal Framework, percentage calculations and display bands are custom GLORB structures. They are not standardised health measures or published cut-offs.
+
+
+## Download package
+
+The main download action creates a ZIP package so one document does not have to serve every audience at once. The ZIP contains:
+
+- `00_READ_ME_Adult_Guide.pdf` — how to understand and use the Signal Mapper information, research context, maths, limits and disclaimers.
+- `01_<Name>_Full_Signal_Report.pdf` — the comprehensive adult-facing synthesis.
+- `02_Things_That_Help_<Name>_Cards.pdf` — printable cards generated only from mapped things that help.
+- `03_<Name>_My_Answers.pdf` — the exact questions and student responses, plus student-written text, without interpretation.
+- `04_<Name>_My_Signal_Map.pdf` — the shorter, visual student-facing summary.
+
+The current response data stays in page memory only. If the user leaves, refreshes or starts over, they need to generate a copy first if they want to keep their work.
