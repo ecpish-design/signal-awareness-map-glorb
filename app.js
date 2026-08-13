@@ -1142,7 +1142,18 @@
     const name=state.studentName || 'Student'; const bySignal=mapsBySignal();
     return `<section class="report-page report-page-landscape">
       ${reportHeader(`How ${name}’s Signals Can Build and Change`, 'Low → Rising → Overload → Recovery / Return')}
-      <div class="pathway-graphic" aria-hidden="true"><svg viewBox="0 0 1000 220" preserveAspectRatio="none"><polyline points="80,175 360,135 690,35 920,165" fill="none" stroke="#10233a" stroke-width="12" stroke-linejoin="round"/><circle cx="80" cy="175" r="20" fill="#a9cbe9"/><circle cx="360" cy="135" r="20" fill="#f0bf83"/><circle cx="690" cy="35" r="20" fill="#e5aab8"/><circle cx="920" cy="165" r="20" fill="#c7c9bb"/></svg><div class="pathway-labels"><span>LOW</span><span>RISING</span><span>OVERLOAD</span><span>RECOVERY</span></div></div>
+      <div class="pathway-graphic" aria-hidden="true">
+        <div class="pathway-track">
+          <span class="path-segment segment-low-rising"></span>
+          <span class="path-segment segment-rising-overload"></span>
+          <span class="path-segment segment-overload-recovery"></span>
+          <span class="path-dot path-dot-low"></span>
+          <span class="path-dot path-dot-rising"></span>
+          <span class="path-dot path-dot-overload"></span>
+          <span class="path-dot path-dot-recovery"></span>
+        </div>
+        <div class="pathway-labels"><span>LOW</span><span>RISING</span><span>OVERLOAD</span><span>RECOVERY</span></div>
+      </div>
       <div class="support-path-grid">${pathwayStage('low',bySignal.low)}${pathwayStage('rising',bySignal.rising)}${pathwayStage('overload',bySignal.overload)}${pathwayStage('recovery',null,true)}</div>
     </section>`;
   }
