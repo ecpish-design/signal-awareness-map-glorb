@@ -263,6 +263,17 @@ h1, h2, h3, p { margin-top: 0; }
 .report-page p, .report-page li { font-size: 10.5pt; line-height: 1.42; }
 .report-kicker { color: var(--orange-dark); font-weight: 900; letter-spacing: .16em; font-size: 9pt; text-transform: uppercase; margin-bottom: 3mm; }
 .report-subtitle { font-size: 13pt !important; color: #4e5b6c; margin-bottom: 8mm; }
+
+.report-generated {
+  position: absolute;
+  right: 12mm;
+  bottom: 4mm;
+  margin: 0 !important;
+  color: #6b7480;
+  font-size: 7pt !important;
+  line-height: 1 !important;
+  white-space: nowrap;
+}
 .report-note { background: #fff; border-left: 4px solid var(--orange); padding: 4mm; margin: 4mm 0; }
 .signal-report-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 5mm; }
 .signal-report-card { background: #fff; border: 1px solid #cfc5b5; padding: 5mm; min-height: 55mm; break-inside: avoid; }
@@ -1027,3 +1038,6 @@ h1, h2, h3, p { margin-top: 0; }
     padding-bottom: 28px;
   }
 }
+
+/* Timestamp footer for every generated PDF page. */
+#reportRoot.pdf-export .report-generated { right: 12mm; bottom: 4mm; font-size: 6.8pt !important; }

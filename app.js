@@ -34,6 +34,7 @@
   });
 
   let state = blankState();
+  let activeExportStamp = null;
 
   const $ = (sel, root = document) => root.querySelector(sel);
   const $$ = (sel, root = document) => [...root.querySelectorAll(sel)];
@@ -42,6 +43,19 @@
   }[ch]));
   const lower = (s = '') => String(s).toLowerCase();
   const cap = (s = '') => s ? s.charAt(0).toUpperCase() + s.slice(1) : '';
+
+  function makeExportStamp(date = new Date()) {
+    const pad = (n) => String(n).padStart(2, '0');
+    const fileStamp = `${date.getFullYear()}-${pad(date.getMonth()+1)}-${pad(date.getDate())}_${pad(date.getHours())}${pad(date.getMinutes())}`;
+    const display = new Intl.DateTimeFormat(undefined, {
+      day: 'numeric', month: 'short', year: 'numeric', hour: 'numeric', minute: '2-digit'
+    }).format(date);
+    return { date, fileStamp, display };
+  }
+
+  function exportStamp() {
+    return activeExportStamp || makeExportStamp();
+  }
 
   function markDirty() {
     state.dirty = true;
@@ -1009,7 +1023,8 @@
   }
 
   function reportHeader(title, subtitle = '') {
-    return `<p class="report-kicker">GLORB // SIGNAL MAPPER</p><h1>${esc(title)}</h1>${subtitle ? `<p class="report-subtitle">${esc(subtitle)}</p>` : ''}`;
+    const stamp = exportStamp();
+    return `<p class="report-kicker">GLORB // SIGNAL MAPPER</p><h1>${esc(title)}</h1>${subtitle ? `<p class="report-subtitle">${esc(subtitle)}</p>` : ''}<p class="report-generated">Generated ${esc(stamp.display)}</p>`;
   }
 
   function buildOneFeelingReport(map, partial = false) {
@@ -1405,7 +1420,10 @@
   }
 
   function renderReportPreview(type) {
+    const previousStamp = activeExportStamp;
+    activeExportStamp = makeExportStamp();
     const html = buildFullReportHtml(type);
+    activeExportStamp = previousStamp;
     app.innerHTML = `<div class="report-preview-wrap"><div class="report-actions"><button id="reportBack" class="secondary-btn" type="button">← BACK TO MAP</button><button id="downloadZip" class="primary-btn" type="button">DOWNLOAD ZIP</button><button id="printPdf" class="secondary-btn" type="button">PRINT FULL REPORT</button><button id="sharePdf" class="secondary-btn" type="button">SHARE FULL REPORT</button></div>${html}</div>`;
     $('#reportBack', app).addEventListener('click', goBack);
     $('#downloadZip', app).addEventListener('click', () => downloadZip(type));
@@ -1413,10 +1431,18 @@
     $('#sharePdf', app).addEventListener('click', () => shareReport(type));
   }
 
-  function filename(kind = 'full') {
+  function filename(kind = 'full', stamp = exportStamp()) {
     const display = (state.studentName || 'Student').trim() || 'Student';
     const safe = display.replace(/[^a-z0-9]+/gi, '_').replace(/^_+|_+$/g, '') || 'Student';
-    const names = { full: `01_${safe}_Full_Signal_Report.pdf`, cards: `02_Things_That_Help_${safe}_Cards.pdf`, answers: `03_${safe}_My_Answers.pdf`, student: `04_${safe}_My_Signal_Map.pdf`, guide: `00_READ_ME_Adult_Guide.pdf`, zip: `${safe}_Signal_Map.zip` };
+    const ts = stamp.fileStamp;
+    const names = {
+      full: `01_${safe}_Full_Signal_Report_${ts}.pdf`,
+      cards: `02_Things_That_Help_${safe}_Cards_${ts}.pdf`,
+      answers: `03_${safe}_My_Answers_${ts}.pdf`,
+      student: `04_${safe}_My_Signal_Map_${ts}.pdf`,
+      guide: `00_READ_ME_Adult_Guide_${ts}.pdf`,
+      zip: `${safe}_Signal_Map_${ts}.zip`
+    };
     return names[kind] || names.full;
   }
 
@@ -1428,8 +1454,10 @@
     })));
   }
 
-  async function makePdfBlob(type = 'current', kind = 'full') {
+  async function makePdfBlob(type = 'current', kind = 'full', stamp = makeExportStamp()) {
     if (!window.html2pdf) throw new Error('PDF library is unavailable');
+    const previousStamp = activeExportStamp;
+    activeExportStamp = stamp;
     const configs = {
       full: { html: buildFullReportHtml(type), orientation: 'landscape' },
       cards: { html: buildCardsReportHtml(), orientation: 'portrait' },
@@ -1444,17 +1472,18 @@
     await waitForImages(reportRoot);
     if (document.fonts?.ready) await document.fonts.ready;
     const element = $('.report-document', reportRoot);
-    const opt = { margin:0, filename:filename(kind), image:{type:'jpeg',quality:.98}, html2canvas:{scale:2,useCORS:true,backgroundColor:'#f6efe3',scrollY:0}, jsPDF:{unit:'mm',format:'a4',orientation:cfg.orientation}, pagebreak:{mode:['css','legacy'],avoid:['.signal-column','.pressure-summary-card','.cut-card','.quick-guide-grid>div','.report-table']}, enableLinks:true };
+    const opt = { margin:0, filename:filename(kind, stamp), image:{type:'jpeg',quality:.98}, html2canvas:{scale:2,useCORS:true,backgroundColor:'#f6efe3',scrollY:0}, jsPDF:{unit:'mm',format:'a4',orientation:cfg.orientation}, pagebreak:{mode:['css','legacy'],avoid:['.signal-column','.pressure-summary-card','.cut-card','.quick-guide-grid>div','.report-table']}, enableLinks:true };
     try {
       return await window.html2pdf().set(opt).from(element).toPdf().outputPdf('blob');
     } finally {
       reportRoot.classList.remove('pdf-export');
       reportRoot.style.width = '';
+      activeExportStamp = previousStamp;
     }
   }
 
   async function downloadPdf(type = 'current') {
-    try { toast('Making the full report…'); const blob=await makePdfBlob(type,'full'); const url=URL.createObjectURL(blob); const a=document.createElement('a'); a.href=url; a.download=filename('full'); document.body.appendChild(a); a.click(); a.remove(); setTimeout(()=>URL.revokeObjectURL(url),3000); }
+    try { const stamp=makeExportStamp(); toast('Making the full report…'); const blob=await makePdfBlob(type,'full',stamp); const url=URL.createObjectURL(blob); const a=document.createElement('a'); a.href=url; a.download=filename('full',stamp); document.body.appendChild(a); a.click(); a.remove(); setTimeout(()=>URL.revokeObjectURL(url),3000); }
     catch(error){ console.error(error); toast('PDF download is unavailable right now. Use Print instead.'); }
   }
 
@@ -1463,31 +1492,36 @@
     if (!window.JSZip) return toast('ZIP download is unavailable right now.');
     try {
       toast('Making your Signal Map files…');
+      const stamp = makeExportStamp();
       const zip = new JSZip();
       const files = [
-        ['guide', filename('guide')], ['full', filename('full')], ['cards', filename('cards')], ['answers', filename('answers')], ['student', filename('student')]
+        ['guide', filename('guide', stamp)], ['full', filename('full', stamp)], ['cards', filename('cards', stamp)], ['answers', filename('answers', stamp)], ['student', filename('student', stamp)]
       ];
       for (const [kind, name] of files) {
-        const blob = await makePdfBlob(type, kind);
+        const blob = await makePdfBlob(type, kind, stamp);
         zip.file(name, blob);
       }
       const out = await zip.generateAsync({ type: 'blob', compression: 'DEFLATE', compressionOptions: { level: 6 } });
-      const url=URL.createObjectURL(out); const a=document.createElement('a'); a.href=url; a.download=filename('zip'); document.body.appendChild(a); a.click(); a.remove(); setTimeout(()=>URL.revokeObjectURL(url),5000);
+      const url=URL.createObjectURL(out); const a=document.createElement('a'); a.href=url; a.download=filename('zip',stamp); document.body.appendChild(a); a.click(); a.remove(); setTimeout(()=>URL.revokeObjectURL(url),5000);
       toast('Your ZIP is ready.');
     } catch(error) { console.error(error); toast('The ZIP could not be created. Try printing or sharing the full report.'); }
   }
 
   function printReport(type = 'current') {
+    const previousStamp = activeExportStamp;
+    activeExportStamp = makeExportStamp();
     reportRoot.style.width='277mm';
     reportRoot.innerHTML = buildFullReportHtml(type);
+    activeExportStamp = previousStamp;
     document.body.classList.add('printing-landscape');
     waitForImages(reportRoot).then(() => setTimeout(() => { window.print(); setTimeout(()=>document.body.classList.remove('printing-landscape'),400); }, 80));
   }
 
   async function shareReport(type = 'current') {
     try {
-      const blob = await makePdfBlob(type,'full');
-      const file = new File([blob], filename('full'), { type: 'application/pdf' });
+      const stamp = makeExportStamp();
+      const blob = await makePdfBlob(type,'full',stamp);
+      const file = new File([blob], filename('full',stamp), { type: 'application/pdf' });
       if (navigator.share && navigator.canShare && navigator.canShare({ files: [file] })) await navigator.share({ title: `${state.studentName || 'Student'}’s GLORB Signal Map`, files: [file] });
       else toast('This device cannot share the PDF directly. Download the ZIP or print the full report instead.');
     } catch (error) { if (error?.name !== 'AbortError') { console.error(error); toast('Sharing is unavailable right now. Download the ZIP instead.'); } }
