@@ -713,7 +713,7 @@
 
   function renderPressureWelcome() {
     app.innerHTML = `
-      <section class="screen screen-fit">
+      <section class="screen screen-fit pressure-welcome-screen">
         <div class="transition-wrap">
           <div class="transition-card transition-card-left pressure-welcome-card">
             <div class="transition-copy">

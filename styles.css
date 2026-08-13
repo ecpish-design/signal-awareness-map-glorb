@@ -1000,3 +1000,30 @@ h1, h2, h3, p { margin-top: 0; }
     margin: 18px 0 22px;
   }
 }
+
+
+/* === AUG 13 PRESSURE INTRO SCROLL FIX ===
+   The intro can be taller than the usable viewport on school laptops/iPads.
+   Let the document scroll normally here; actual one-question screens keep
+   their fixed no-scroll interaction. */
+.pressure-welcome-screen {
+  height: auto !important;
+  max-height: none !important;
+  min-height: calc(100dvh - var(--topbar-h) - 5px);
+  overflow: visible !important;
+  padding-bottom: 34px;
+}
+.pressure-welcome-screen .transition-wrap {
+  min-height: 0;
+}
+.pressure-welcome-screen .pressure-welcome-card {
+  min-height: 0;
+}
+
+@media (max-height: 820px) and (min-width: 761px) {
+  .pressure-welcome-screen { padding-top: 14px; }
+  .pressure-welcome-screen .pressure-welcome-card {
+    padding-top: 28px;
+    padding-bottom: 28px;
+  }
+}
