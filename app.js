@@ -1161,9 +1161,18 @@
   function buildWholeStudentPages() {
     const name = state.studentName || 'Student';
     const bySignal = mapsBySignal();
-    return `<section class="report-page report-page-landscape student-report-page">
+    const mappedSummary = ['low','steady','rising','overload'].map((id) => {
+      const map = bySignal[id];
+      const sig = D.signals[id];
+      return `<div class="student-overview-chip ${id}"><div class="report-signal-label">${sig.label}</div><div class="report-feeling-large small">${esc(map?.feeling?.label || 'Not mapped yet')}</div></div>`;
+    }).join('');
+    return `<section class="report-page report-page-landscape student-report-page student-overview-page">
       ${reportHeader(`${name}’s Signal Map`, 'My map')}
       <div class="student-signal-visual"><img src="${D.combinedSignalAsset}" alt="GLORB Signal System" /></div>
+      <div class="student-overview-row">${mappedSummary}</div>
+    </section>
+    <section class="report-page report-page-landscape student-report-page student-detail-page">
+      ${reportHeader(`${name}’s Detailed Signal Map`, 'What I identified in each Signal')}
       <div class="signal-columns five student-columns">${['low','steady','rising','overload'].map((id) => signalColumn(id, bySignal[id])).join('')}${recoveryColumn()}</div>
     </section>`;
   }
@@ -1182,7 +1191,7 @@
   function buildPressureStudentPage() {
     const name = state.studentName || 'Student';
     const calc = pressureStats();
-    const top = calc.highest.filter((x) => x.value >= 2).slice(0, 10);
+    const top = calc.highest.filter((x) => x.value >= 2).slice(0, 8);
     return `<section class="report-page student-report-page">
       ${reportHeader(`What Can Make Things Harder for ${name}`, 'What I said bothers me')}
       ${top.length ? `<div class="student-pressure-grid">${top.map((x) => `<div class="student-pressure-card"><img src="${x.item.asset}" alt=""><div><b>${esc(x.item.label)}</b><p>${esc(x.response.studentLabel)}</p></div></div>`).join('')}</div>` : '<p class="report-empty">Nothing was rated Kind of / Sometimes or higher.</p>'}
@@ -1199,18 +1208,26 @@
       return `<div class="pressure-summary-card"><h3><span>${esc(domain.adultTitle)}</span><span class="impact-pill">${pct === null ? 'NOT ENOUGH INFORMATION YET' : `${pct}% — ${st.band}`}</span></h3>${pct !== null ? `<div class="severity-meter"><b>Student-rated severity</b><div class="severity-track"><span style="width:${pct}%"></span></div><b>${pct}%</b></div><p>Average rating: ${st.average.toFixed(2)} / 4 • ${st.numeric} of ${domain.items.length} items included numerically${st.unknown ? ` • ${st.unknown} uncertain` : ''}</p>` : `<p>Fewer than half of the items in this area have a usable numerical value, so a percentage is not shown.</p>`}${reminderExtra}<p>${esc(domain.adultMeaning || '')}</p></div>`;
     }).join('');
     const overall = calc.overallPercent === null ? null : Math.round(calc.overallPercent);
-    return `<section class="report-page">
+
+    const highestChunks = [];
+    for (let i = 0; i < calc.highest.length; i += 12) highestChunks.push(calc.highest.slice(i, i + 12));
+    const highestPages = highestChunks.length ? highestChunks.map((chunk, index) => `<section class="report-page report-page-landscape">
+      ${reportHeader(index === 0 ? 'Highest-Rated Items' : 'Highest-Rated Items — Continued', highestChunks.length > 1 ? `Page ${index + 1} of ${highestChunks.length}` : '')}
+      <table class="report-table compact-table"><thead><tr><th>Area</th><th>Item</th><th>Student rating</th></tr></thead><tbody>${chunk.map((x) => `<tr><td>${esc(x.domain.adultTitle)}</td><td>${esc(x.item.label)}</td><td>${esc(x.response.studentLabel)}${x.value===null?'':` — ${x.value}/4`}</td></tr>`).join('')}</tbody></table>
+    </section>`).join('') : `<section class="report-page report-page-landscape">${reportHeader('Highest-Rated Items')}<p>No numerical ratings have been entered yet.</p></section>`;
+
+    const detailPages = D.pressureDomains.map((domain) => {
+      const st=calc.stats[domain.id];
+      return `<section class="report-page report-page-landscape pressure-detail-page">${reportHeader(domain.adultTitle, 'Complete item-by-item responses')}<table class="report-table compact-table pressure-detail-table"><thead><tr><th>Item</th>${domain.id==='reminder'?'<th>Reminder identified?</th>':''}<th>Student rating</th><th>Organising description</th></tr></thead><tbody>${st.rows.map(({item,response}) => `<tr><td>${esc(item.label)}</td>${domain.id==='reminder'?`<td>${esc(response?.presenceAnswer ? answerLabel(response.presenceAnswer) : 'Not asked yet')}</td>`:''}<td>${response?esc(response.studentLabel):'Not mapped yet'}</td><td>${esc(item.adultDescriptor)}</td></tr>`).join('')}</tbody></table></section>`;
+    }).join('');
+
+    return `<section class="report-page report-page-landscape pressure-summary-page">
       ${reportHeader('Identified Pressures on Regulation', `Adult summary of ${name === 'the student' ? 'the student’s' : `${name}’s`} ratings`)}
       <p>The percentages below summarise how strongly ${esc(name)} reported being bothered by the items presented in each area. “I don’t know” and first-step uncertainty are recorded separately rather than treated as “Not at all”.</p>
       ${overall === null ? `<div class="overall-severity"><b>Overall:</b> Not enough information yet to calculate an overall percentage across all four areas.</div>` : `<div class="overall-severity"><b>Overall student-rated severity:</b> ${overall}% — ${calc.overallBand}. Each of the four areas contributes equally to this overall percentage.</div>`}
       <div class="pressure-grid-two">${categoryCards}</div>
       <div class="report-note"><b>How to interpret this</b><p>The percentages are descriptive summaries created from the student’s own ratings. They are not standardised scores and do not identify or rule out a health, developmental or psychological condition.</p></div>
-    </section>
-    <section class="report-page">
-      ${reportHeader('Highest-Rated Items')}
-      ${calc.highest.length ? `<table class="report-table"><thead><tr><th>Area</th><th>Item</th><th>Student rating</th></tr></thead><tbody>${calc.highest.slice(0,18).map((x) => `<tr><td>${esc(x.domain.adultTitle)}</td><td>${esc(x.item.label)}</td><td>${esc(x.response.studentLabel)}${x.value===null?'':` — ${x.value}/4`}</td></tr>`).join('')}</tbody></table>` : '<p>No numerical ratings have been entered yet.</p>'}
-    </section>
-    ${D.pressureDomains.map((domain) => { const st=calc.stats[domain.id]; return `<section class="report-page">${reportHeader(domain.adultTitle, 'Complete item-by-item responses')}<table class="report-table"><thead><tr><th>Item</th>${domain.id==='reminder'?'<th>Reminder identified?</th>':''}<th>Student rating</th><th>Organising description</th></tr></thead><tbody>${st.rows.map(({item,response}) => `<tr><td>${esc(item.label)}</td>${domain.id==='reminder'?`<td>${esc(response?.presenceAnswer ? answerLabel(response.presenceAnswer) : 'Not asked yet')}</td>`:''}<td>${response?esc(response.studentLabel):'Not mapped yet'}</td><td>${esc(item.adultDescriptor)}</td></tr>`).join('')}</tbody></table></section>`; }).join('')}`;
+    </section>${highestPages}${detailPages}`;
   }
 
   function buildWholeAdultPages() {
@@ -1226,19 +1243,28 @@
   }
 
   function buildCurriculumAndReferencesPage() {
-    return `<section class="report-page">
+    const refs = D.references;
+    const refChunks = [];
+    for (let i = 0; i < refs.length; i += 5) refChunks.push(refs.slice(i, i + 5));
+    const contextPage = `<section class="report-page report-page-landscape research-context-page">
       ${reportHeader('About the Framework & Research', 'Adult information')}
-      <h2>Curriculum links</h2>
-      <p>The mapper supports learning connected with emotional awareness, reflective practice and emotional regulation in the Australian Curriculum Personal and Social Capability ${cite('acara-psc')}. ACARA’s Mental health and wellbeing curriculum connection also highlights learning about factors that influence emotions, communication, help-seeking and responding to change and challenge ${cite('acara-mh')}.</p>
-      <h2>Research context</h2>
-      <p>AERO guidance for schools describes changing phases of escalation and highlights recognising early changes, adjusting the environment and responding according to the student’s current needs ${cite('aero')}. The GLORB framework is not the AERO model.</p>
-      <p>Research supports considering sensory and environmental factors as possible influences while recognising substantial individual variation ${cite('gomez')}. NCTSN resources describe how everyday sights, sounds and experiences can act as reminders for some children ${cite('nctsn')}.</p>
-      <p><b>GLORB does not infer why a student responds in a particular way.</b> A reminder response does not mean a student has experienced trauma, and a sensory response does not indicate a particular condition.</p>
-      <p><b>GLORB therefore keeps the student’s self-identified responses visible rather than replacing them with an alternate interpretation.</b></p>
-      <h2>Important limits</h2>
-      <p>The GLORB Signal Framework is a communication framework created for this resource. Its Signal categories and percentage bands are not published research cut-offs. The 0–4 bother ratings are ordinal responses: the points have a meaningful order, but the distance between points should not be treated as an exact scientific interval. GLORB does not measure physiological processes.</p>
-      <h2>References</h2><ol class="report-reference-list">${D.references.map((r) => `<li id="ref-${esc(r.id)}">${esc(r.apa)} <a href="${esc(r.url)}">${esc(r.url)}</a></li>`).join('')}</ol>
+      <div class="research-two-col"><div>
+        <h2>Curriculum links</h2>
+        <p>The mapper supports learning connected with emotional awareness, reflective practice and emotional regulation in the Australian Curriculum Personal and Social Capability ${cite('acara-psc')}. ACARA’s Mental health and wellbeing curriculum connection also highlights learning about factors that influence emotions, communication, help-seeking and responding to change and challenge ${cite('acara-mh')}.</p>
+        <h2>Research context</h2>
+        <p>AERO guidance for schools describes changing phases of escalation and highlights recognising early changes, adjusting the environment and responding according to the student’s current needs ${cite('aero')}. The GLORB framework is not the AERO model.</p>
+        <p>Research supports considering sensory and environmental factors as possible influences while recognising substantial individual variation ${cite('gomez')}. NCTSN resources describe how everyday sights, sounds and experiences can act as reminders for some children ${cite('nctsn')}.</p>
+      </div><div>
+        <h2>Interpretation limits</h2>
+        <p><b>GLORB does not infer why a student responds in a particular way.</b> A reminder response does not mean a student has experienced trauma, and a sensory response does not indicate a particular condition.</p>
+        <p><b>GLORB therefore keeps the student’s self-identified responses visible rather than replacing them with an alternate interpretation.</b></p>
+        <h2>Important limits</h2>
+        <p>The GLORB Signal Framework is a communication framework created for this resource. Its Signal categories and percentage bands are not published research cut-offs. The 0–4 bother ratings are ordinal responses: the points have a meaningful order, but the distance between points should not be treated as an exact scientific interval. GLORB does not measure physiological processes.</p>
+        ${reportUseNote()}
+      </div></div>
     </section>`;
+    const refPages = refChunks.map((chunk, index) => `<section class="report-page report-page-landscape references-page">${reportHeader(index === 0 ? 'References' : 'References — Continued', `Page ${index + 1} of ${refChunks.length}`)}<ol class="report-reference-list">${chunk.map((r) => `<li id="ref-${esc(r.id)}">${esc(r.apa)} <a href="${esc(r.url)}">${esc(r.url)}</a></li>`).join('')}</ol></section>`).join('');
+    return contextPage + refPages;
   }
 
   function getThingsThatHelpCards() {
@@ -1265,7 +1291,7 @@
     const cards = getThingsThatHelpCards();
     const name = state.studentName || 'Student';
     if (!cards.length) return `<section class="report-page">${reportHeader(`Things That Help ${name} Cards`, 'Printable cards')}<div class="report-note"><b>NO CARDS YET</b><p>No “helps” were mapped in the completed sections, so there are no printable cards in this copy.</p></div></section>`;
-    const chunks=[]; for(let i=0;i<cards.length;i+=8) chunks.push(cards.slice(i,i+8));
+    const chunks=[]; for(let i=0;i<cards.length;i+=6) chunks.push(cards.slice(i,i+6));
     return chunks.map((chunk,index)=>`<section class="report-page">${reportHeader(`Things That Help ${name} Cards`, chunks.length>1?`Printable cards — page ${index+1} of ${chunks.length}`:'Printable cards')}<p>Cut along the dotted lines. Signal names are printed as well as colour-coded so the cards do not rely on colour alone.</p><div class="report-card-sheet">${chunk.map((c)=>`<div class="cut-card ${c.signal}"><div class="card-signal">${esc(c.signal==='recovery'?'RECOVERY / RETURN':D.signals[c.signal]?.label||'')} • ${esc(c.feeling)}</div>${c.asset?`<img src="${c.asset}" alt="">`:'<div class="text-card-space"></div>'}<div><div class="card-text">${esc(c.label)}</div>${c.sometimes?'<div class="sometimes-tag">SOMETIMES HELPS</div>':''}</div></div>`).join('')}</div></section>`).join('');
   }
 
@@ -1309,13 +1335,29 @@
 
   function buildAnswersReportHtml(type = 'current') {
     const name=state.studentName||'Student'; let pages='';
+
+    const answerTable = (title, recs) => Object.keys(recs||{}).length ? `<h2>${esc(title)}</h2><table class="report-table answers-table"><thead><tr><th>Question</th><th>Answer</th></tr></thead><tbody>${answerTableRows(recs)}</tbody></table>` : '';
+
     allMaps().forEach((map)=>{
-      const sections=[['What happens for you',map.sections.patterns],['What you may want to do',map.sections.actions],['Things that help',map.sections.selfHelp],['How other people can help',map.sections.otherHelp]];
-      pages += `<section class="report-page">${reportHeader(`${name}’s Answers — ${map.feeling.label}`, `${D.signals[map.feeling.signal]?.label||''} • Responses shown as entered`)}${sections.map(([title,recs])=>Object.keys(recs||{}).length?`<h2>${esc(title)}</h2><table class="report-table"><thead><tr><th>Question</th><th>Answer</th></tr></thead><tbody>${answerTableRows(recs)}</tbody></table>`:'').join('')}${map.extraSelfHelp?`<h2>Something else that helps</h2><p>${esc(map.extraSelfHelp)}</p>`:''}${map.extraOtherHelp?`<h2>Something else another person can do</h2><p>${esc(map.extraOtherHelp)}</p>`:''}${map.note?`<h2>What I want adults to know</h2><p>${esc(map.note)}</p>`:''}</section>`;
+      const sigLabel = D.signals[map.feeling.signal]?.label || '';
+      const firstParts = answerTable('What happens for you', map.sections.patterns) + answerTable('What you may want to do', map.sections.actions);
+      const secondParts = answerTable('Things that help', map.sections.selfHelp) + answerTable('How other people can help', map.sections.otherHelp)
+        + (map.extraSelfHelp?`<h2>Something else that helps</h2><p>${esc(map.extraSelfHelp)}</p>`:'')
+        + (map.extraOtherHelp?`<h2>Something else another person can do</h2><p>${esc(map.extraOtherHelp)}</p>`:'')
+        + (map.note?`<h2>What I want adults to know</h2><p>${esc(map.note)}</p>`:'');
+
+      if (map.feeling.signal === 'steady' || !secondParts.trim()) {
+        pages += `<section class="report-page answers-page">${reportHeader(`${name}’s Answers — ${map.feeling.label}`, `${sigLabel} • Responses shown as entered`)}${firstParts}${secondParts}</section>`;
+      } else {
+        pages += `<section class="report-page answers-page">${reportHeader(`${name}’s Answers — ${map.feeling.label}`, `${sigLabel} • Responses shown as entered`)}${firstParts}</section>`;
+        pages += `<section class="report-page answers-page">${reportHeader(`${name}’s Answers — ${map.feeling.label}`, 'Continued • Responses shown as entered')}${secondParts}</section>`;
+      }
     });
-    if (Object.keys(state.recovery.patterns).length || Object.keys(state.recovery.helps).length) pages += `<section class="report-page">${reportHeader(`${name}’s Answers — Recovery / Return`,'Responses shown as entered')}<h2>Recovery</h2><table class="report-table"><thead><tr><th>Question</th><th>Answer</th></tr></thead><tbody>${answerTableRows(state.recovery.patterns)}${answerTableRows(state.recovery.helps)}</tbody></table></section>`;
+
+    if (Object.keys(state.recovery.patterns).length || Object.keys(state.recovery.helps).length) pages += `<section class="report-page answers-page">${reportHeader(`${name}’s Answers — Recovery / Return`,'Responses shown as entered')}<h2>Recovery</h2><table class="report-table answers-table"><thead><tr><th>Question</th><th>Answer</th></tr></thead><tbody>${answerTableRows(state.recovery.patterns)}${answerTableRows(state.recovery.helps)}</tbody></table></section>`;
+
     if (hasPressureAnswers()) D.pressureDomains.forEach((domain)=>{
-      pages += `<section class="report-page">${reportHeader(`${name}’s Answers — ${domain.studentTitle}`,'Responses shown as entered')}<table class="report-table"><thead><tr><th>Question asked</th><th>Answer</th></tr></thead><tbody>${domain.items.map((item)=>{
+      pages += `<section class="report-page answers-page">${reportHeader(`${name}’s Answers — ${domain.studentTitle}`,'Responses shown as entered')}<table class="report-table answers-table"><thead><tr><th>Question asked</th><th>Answer</th></tr></thead><tbody>${domain.items.map((item)=>{
         const r=state.pressureRatings[domain.id][item.id];
         if (!r) {
           const q=domain.id==='reminder'?reminderCheckQuestion(item.id):pressureItemQuestion(domain.id,item.id);
@@ -1334,11 +1376,15 @@
   }
 
   function buildAdultGuideHtml() {
-    const pages=`<section class="report-page">${reportHeader('Read This First', 'GLORB // Signal Mapper information')}<div class="framework-report-box"><div class="framework-report-copy"><h2>FOR STUDENTS</h2><p>This mapper helps you show what different feelings are like for you, what you notice, what helps and what other people can do that helps. There are no right answers. Your answers are about you.</p><h2>WHAT HAPPENS TO YOUR ANSWERS?</h2><p>Your answers are kept only while the page is open. If you want to keep them, download, print or share before leaving.</p></div><div class="framework-report-image"><img src="${D.combinedSignalAsset}" alt="GLORB Signal System"></div></div><div class="report-note"><b>WHAT IS THIS FOR?</b><p>The map can make a student’s own experience easier to notice, explain and communicate. It gives students and people working with them a tool to start conversations about what they experience and what helps.</p></div></section>`+
-    buildSignalSystemGuidePage()+
-    `<section class="report-page">${reportHeader('How the “What Can Make Things Harder” Ratings Work','Adult information')}<p>Sensory, situational and relational items use a 0–4 student-facing rating from Not at all to A whole lot. “I don’t know” is kept separately.</p><p>Reminder-related items use two steps: first, whether a cue reminds the student of something upsetting; then, when it does, how much that reminder bothers them. The response record keeps both answers.</p><div class="math-box">Area percentage = sum of numerical values ÷ (number of numerical values × 4) × 100</div><p>Where all four areas have enough information, the overall percentage is the average of the four area percentages, so each area contributes equally.</p><div class="disclaimer"><b>IMPORTANT:</b> These percentages and display bands are descriptive summaries created by GLORB. They are not standardised results. GLORB does not infer why a student responds in a particular way and does not measure physiological processes.</div>${reportUseNote()}</section>`+
-    buildCurriculumAndReferencesPage();
-    return wrapReport(pages,'portrait');
+    const name = state.studentName || 'Student';
+    const studentPage = `<section class="report-page guide-page">${reportHeader('Read This First', 'GLORB // Signal Mapper information')}<div class="framework-report-box guide-student-box"><div class="framework-report-copy"><h2>FOR STUDENTS</h2><p>This mapper helps you show what different feelings are like for you, what you notice, what helps and what other people can do that helps. There are no right answers. Your answers are about you.</p><h2>WHAT HAPPENS TO YOUR ANSWERS?</h2><p>Your answers are kept only while the page is open. If you want to keep them, download, print or share before leaving.</p></div><div class="framework-report-image"><img src="${D.combinedSignalAsset}" alt="GLORB Signal System"></div></div><div class="report-note"><b>WHAT IS THIS FOR?</b><p>The map can make a student’s own experience easier to notice, explain and communicate. It gives students and people working with them a tool to start conversations about what they experience and what helps.</p></div></section>`;
+
+    const adultSignalPage = `<section class="report-page guide-page">${reportHeader(`For Adults: How to Read ${name}’s Signal Map`, 'Student-identified information organised for everyday use')}<div class="framework-report-box guide-framework-box"><div class="framework-report-copy"><h2>WHAT IS THE SIGNAL SYSTEM?</h2><p>The Signal System is a student-friendly way to describe changes in energy, attention, tension, thinking, communication and available capacity across the day. It is not a diagnosis, a score or a ranking of behaviour. A student can move between Signals.</p><p><b>Steady does not mean silent, still or perfectly calm.</b> This map records what ${esc(name)} identified for themselves.</p></div><div class="framework-report-image"><img src="${D.combinedSignalAsset}" alt="GLORB Signal System"></div></div><div class="signal-definition-grid guide-signal-grid">${['low','steady','rising','overload'].map((id) => `<div class="signal-definition ${id}"><h3>${D.signals[id].label}</h3><p>${esc(D.signals[id].adultDescription)}</p></div>`).join('')}</div><div class="report-note"><b>Early response matters.</b><p>Rising Signal is a useful point to notice early changes and use the things ${esc(name)} has identified as helpful before things become much harder. AERO guidance likewise emphasises recognising early change and responding according to the student’s current needs ${cite('aero')}.</p></div>${reportUseNote()}</section>`;
+
+    const ratingsPage = `<section class="report-page guide-page">${reportHeader('How the “What Can Make Things Harder” Ratings Work','Adult information')}<p>Sensory, situational and relational items use a 0–4 student-facing rating from Not at all to A whole lot. “I don’t know” is kept separately.</p><p>Reminder-related items use two steps: first, whether a cue reminds the student of something upsetting; then, when it does, how much that reminder bothers them. The response record keeps both answers.</p><div class="math-box">Area percentage = sum of numerical values ÷ (number of numerical values × 4) × 100</div><p>Where all four areas have enough information, the overall percentage is the average of the four area percentages, so each area contributes equally.</p><div class="disclaimer"><b>IMPORTANT:</b> These percentages and display bands are descriptive summaries created by GLORB. They are not standardised results. GLORB does not infer why a student responds in a particular way and does not measure physiological processes.</div>${reportUseNote()}</section>`;
+
+    const contextPages = buildCurriculumAndReferencesPage().replaceAll('report-page-landscape','guide-page');
+    return wrapReport(studentPage + adultSignalPage + ratingsPage + contextPages,'portrait');
   }
 
   function buildCardsReportHtml() { return wrapReport(buildHelpCardsPages(),'portrait'); }
@@ -1378,16 +1424,22 @@
       cards: { html: buildCardsReportHtml(), orientation: 'portrait' },
       answers: { html: buildAnswersReportHtml(type), orientation: 'portrait' },
       student: { html: buildStudentReportHtml(type), orientation: 'landscape' },
-      guide: { html: buildAdultGuideHtml(), orientation: 'landscape' }
+      guide: { html: buildAdultGuideHtml(), orientation: 'portrait' }
     };
     const cfg=configs[kind]||configs.full;
-    reportRoot.style.width = cfg.orientation === 'landscape' ? '277mm' : '190mm';
+    reportRoot.classList.add('pdf-export');
+    reportRoot.style.width = cfg.orientation === 'landscape' ? '297mm' : '210mm';
     reportRoot.innerHTML = cfg.html;
     await waitForImages(reportRoot);
     if (document.fonts?.ready) await document.fonts.ready;
     const element = $('.report-document', reportRoot);
-    const opt = { margin:[6,6,6,6], filename:filename(kind), image:{type:'jpeg',quality:.98}, html2canvas:{scale:2,useCORS:true,backgroundColor:'#f6efe3',scrollY:0}, jsPDF:{unit:'mm',format:'a4',orientation:cfg.orientation}, pagebreak:{mode:['css','legacy'],avoid:['.signal-column','.pressure-summary-card','.cut-card','.quick-guide-grid>div']}, enableLinks:true };
-    return await window.html2pdf().set(opt).from(element).toPdf().outputPdf('blob');
+    const opt = { margin:0, filename:filename(kind), image:{type:'jpeg',quality:.98}, html2canvas:{scale:2,useCORS:true,backgroundColor:'#f6efe3',scrollY:0}, jsPDF:{unit:'mm',format:'a4',orientation:cfg.orientation}, pagebreak:{mode:['css','legacy'],avoid:['.signal-column','.pressure-summary-card','.cut-card','.quick-guide-grid>div','.report-table']}, enableLinks:true };
+    try {
+      return await window.html2pdf().set(opt).from(element).toPdf().outputPdf('blob');
+    } finally {
+      reportRoot.classList.remove('pdf-export');
+      reportRoot.style.width = '';
+    }
   }
 
   async function downloadPdf(type = 'current') {

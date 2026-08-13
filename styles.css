@@ -725,3 +725,228 @@ h1, h2, h3, p { margin-top: 0; }
   vertical-align: .08em;
   white-space: nowrap;
 }
+
+/* === AUG 13 REPORT/PDF LAYOUT FIXES === */
+/* Prevent the scale illustration from sitting on top of the intro copy. */
+.pressure-welcome-card {
+  grid-template-columns: minmax(0, 1fr) minmax(300px, 340px);
+}
+.pressure-welcome-card .transition-copy { min-width: 0; }
+.pressure-welcome-card .rating-strip-chip {
+  width: 100% !important;
+  max-width: 340px;
+  height: 220px !important;
+  justify-self: end;
+}
+.pressure-welcome-card .transition-copy p { max-width: 720px; }
+
+/* Every exported .report-page is a real A4 page. Padding is the page margin. */
+#reportRoot.pdf-export .report-document.landscape { width: 297mm !important; }
+#reportRoot.pdf-export .report-document.portrait { width: 210mm !important; }
+#reportRoot.pdf-export .report-document.landscape .report-page {
+  width: 297mm !important;
+  min-height: 210mm !important;
+  padding: 10mm 12mm !important;
+}
+#reportRoot.pdf-export .report-document.portrait .report-page {
+  width: 210mm !important;
+  min-height: 297mm !important;
+  padding: 12mm 14mm !important;
+}
+#reportRoot.pdf-export .report-page {
+  page-break-after: always;
+  break-after: page;
+}
+#reportRoot.pdf-export .report-page:last-child {
+  page-break-after: auto;
+  break-after: auto;
+}
+
+/* Compact, legible landscape report typography so a logical page stays on one PDF page. */
+.report-document.landscape .report-page h1 {
+  font-size: 25pt;
+  line-height: 1.02;
+  margin-bottom: 3mm;
+}
+.report-document.landscape .report-page h2 { font-size: 15pt; margin-bottom: 2.5mm; }
+.report-document.landscape .report-page h3 { font-size: 10.5pt; margin-bottom: 1.4mm; }
+.report-document.landscape .report-page p,
+.report-document.landscape .report-page li { font-size: 8.6pt; line-height: 1.28; }
+.report-document.landscape .report-kicker { font-size: 7.8pt; margin-bottom: 2mm; }
+.report-document.landscape .report-subtitle { font-size: 10.5pt !important; margin-bottom: 4mm; }
+.report-document.landscape .report-note { padding: 2.8mm 3.2mm; margin: 3mm 0; }
+.report-document.landscape .report-note p { margin: 1mm 0 0; }
+
+/* Adult guide / framework page - designed to remain one landscape page. */
+.report-document.landscape .framework-report-box {
+  grid-template-columns: 1fr 38%;
+  gap: 5mm;
+  padding: 4mm;
+  margin: 3mm 0;
+}
+.report-document.landscape .framework-report-copy h2 { font-size: 14pt; }
+.report-document.landscape .framework-report-copy p { font-size: 8.3pt; line-height: 1.28; }
+.report-document.landscape .framework-report-image { min-height: 38mm; }
+.report-document.landscape .framework-report-image img { max-height: 46mm; }
+.report-document.landscape .signal-definition-grid { gap: 2.5mm; margin: 3mm 0; }
+.report-document.landscape .signal-definition { padding: 2.7mm; min-height: 27mm; }
+.report-document.landscape .signal-definition h3 { font-size: 9.5pt; margin-bottom: 1mm; }
+.report-document.landscape .signal-definition p { font-size: 7.6pt; line-height: 1.22; }
+
+/* Five-column signal pages - keep the visual structure the user preferred, but fit the page. */
+.report-document.landscape .signal-columns.five { gap: 2.4mm; }
+.report-document.landscape .signal-column-head { min-height: 26mm; padding: 2.8mm; }
+.report-document.landscape .signal-column-body { padding: 2.8mm; }
+.report-document.landscape .signal-column-body h3 {
+  font-size: 7.2pt;
+  line-height: 1.12;
+  letter-spacing: .07em;
+  margin: 0 0 1mm;
+}
+.report-document.landscape .signal-column-body .report-list {
+  padding-left: 3.8mm;
+  margin: 0 0 2mm;
+}
+.report-document.landscape .signal-column-body .report-list li {
+  font-size: 7.25pt;
+  line-height: 1.16;
+  margin-bottom: .35mm;
+}
+.report-document.landscape .report-signal-label { font-size: 7.3pt; }
+.report-document.landscape .report-feeling-large.small { font-size: 14pt; }
+.report-document.landscape .sometimes-inline { font-size: .62em; }
+
+/* Signal pathway page. */
+.report-document.landscape .pathway-graphic { height: 43mm; margin: 1mm 0 3mm; }
+.report-document.landscape .pathway-graphic svg { height: 33mm; }
+.report-document.landscape .path-stage { min-height: 61mm; padding: 2.6mm; }
+.report-document.landscape .path-stage h3 { font-size: 9pt; }
+.report-document.landscape .path-stage h4 { font-size: 6.8pt; margin: 2mm 0 .7mm; }
+.report-document.landscape .path-stage .path-feeling { font-size: 11pt; }
+.report-document.landscape .path-stage .report-list { padding-left: 3.6mm; }
+.report-document.landscape .path-stage .report-list li { font-size: 7pt; line-height: 1.15; }
+
+/* Adult quick guide: two blocks fit together rather than being split across pages. */
+.report-document.landscape .quick-guide-block { padding: 3.2mm; margin-bottom: 3mm; }
+.report-document.landscape .quick-guide-block h2 { font-size: 13.5pt; margin-bottom: 2mm; }
+.report-document.landscape .quick-guide-grid { gap: 2.5mm; }
+.report-document.landscape .quick-guide-grid > div { padding: 2.8mm; min-height: 39mm; }
+.report-document.landscape .quick-guide-grid h3 { font-size: 7.5pt; }
+.report-document.landscape .quick-guide-grid .report-list { padding-left: 3.6mm; }
+.report-document.landscape .quick-guide-grid .report-list li { font-size: 7.2pt; line-height: 1.16; }
+
+/* Pressure report: 2x2 summary plus tables are deliberately compact. */
+.report-document.landscape .pressure-grid-two { gap: 3mm; }
+.report-document.landscape .pressure-summary-card { padding: 3mm; margin: 0; min-height: 48mm; }
+.report-document.landscape .pressure-summary-card h3 { font-size: 10pt; margin-bottom: 1.5mm; }
+.report-document.landscape .pressure-summary-card p { font-size: 7.6pt; line-height: 1.22; margin: 1.2mm 0; }
+.report-document.landscape .severity-meter { grid-template-columns: 38mm 1fr 18mm; gap: 2mm; margin: 2mm 0; font-size: 8pt; }
+.report-document.landscape .impact-pill { font-size: 7.2pt; padding: 1mm 1.8mm; }
+.report-document.landscape .overall-severity { padding: 2.8mm; margin: 2.5mm 0 3mm; font-size: 9.2pt; }
+.report-document.landscape .report-table th,
+.report-document.landscape .report-table td,
+.report-document.landscape .compact-table th,
+.report-document.landscape .compact-table td {
+  padding: 1.35mm 1.7mm;
+  font-size: 7.45pt;
+  line-height: 1.18;
+}
+.report-document.landscape .pressure-detail-table th,
+.report-document.landscape .pressure-detail-table td { font-size: 7.15pt; }
+
+/* Research and references are deliberately separated, instead of overflowing one page. */
+.research-two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 6mm; }
+.research-two-col > div { min-width: 0; }
+.report-document.landscape .research-two-col h2 { font-size: 14pt; margin-top: 1mm; }
+.report-document.landscape .report-reference-list { margin-top: 3mm; }
+.report-document.landscape .report-reference-list li {
+  font-size: 8pt;
+  line-height: 1.3;
+  margin-bottom: 2.8mm;
+  overflow-wrap: anywhere;
+}
+
+/* Student map: visual overview and detailed five-column map now live on separate pages. */
+.student-overview-page .student-signal-visual {
+  height: 108mm;
+  margin: 2mm auto 5mm;
+  display: grid;
+  place-items: center;
+}
+.student-overview-page .student-signal-visual img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+.student-overview-row {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 3mm;
+}
+.student-overview-chip {
+  border: 1px solid #cfc5b5;
+  padding: 3mm;
+  min-height: 24mm;
+  background: #fff;
+}
+.student-overview-chip.low { border-top: 6px solid #a9cbe9; }
+.student-overview-chip.steady { border-top: 6px solid #a9d9d0; }
+.student-overview-chip.rising { border-top: 6px solid #f0bf83; }
+.student-overview-chip.overload { border-top: 6px solid #e5aab8; }
+.student-detail-page .signal-columns { margin-top: 2mm; }
+
+/* Portrait answer/report pages: avoid splitting tables and make continuations readable. */
+.report-document.portrait .report-page h1 { font-size: 24pt; line-height: 1.04; margin-bottom: 3mm; }
+.report-document.portrait .report-page h2 { font-size: 14.5pt; margin: 4mm 0 2mm; }
+.report-document.portrait .report-page p,
+.report-document.portrait .report-page li { font-size: 9.5pt; line-height: 1.35; }
+.report-document.portrait .report-kicker { font-size: 7.8pt; margin-bottom: 2mm; }
+.report-document.portrait .report-subtitle { font-size: 10.5pt !important; margin-bottom: 5mm; }
+.answers-page .report-table { margin: 2.5mm 0 4mm; }
+.answers-page .report-table th,
+.answers-page .report-table td { padding: 1.55mm 1.8mm; font-size: 8.25pt; line-height: 1.22; }
+.answers-page .report-table th:last-child,
+.answers-page .report-table td:last-child { width: 28%; }
+
+/* Printable cards: 6 per portrait page, no card can be split between pages. */
+.report-document.portrait .report-card-sheet { grid-template-columns: repeat(2, 1fr); gap: 4mm; }
+.report-document.portrait .cut-card { min-height: 62mm; height: 62mm; padding: 3.2mm; }
+.report-document.portrait .cut-card img { height: 35mm; margin: 0 auto; }
+.report-document.portrait .cut-card .card-text { font-size: 12.5pt; }
+.report-document.portrait .cut-card .card-signal { font-size: 7.2pt; }
+
+/* Adult-guide PDF is portrait and has its own balanced spacing. */
+.guide-page .framework-report-box { grid-template-columns: 1fr 42%; padding: 5mm; margin: 4mm 0; }
+.guide-page .framework-report-image { min-height: 48mm; }
+.guide-page .framework-report-image img { max-height: 55mm; }
+.guide-page .signal-definition-grid { grid-template-columns: repeat(2, 1fr); gap: 3mm; }
+.guide-page .signal-definition { min-height: 38mm; padding: 3.5mm; }
+.guide-page .signal-definition p { font-size: 8.7pt; }
+.guide-page .report-note { margin: 4mm 0; }
+.guide-page .research-two-col { grid-template-columns: 1fr; }
+.guide-page .report-reference-list li { overflow-wrap: anywhere; }
+
+@media (max-width: 900px), (orientation: portrait) and (max-width: 1100px) {
+  .pressure-welcome-card { grid-template-columns: minmax(0, 1fr) 230px; }
+  .pressure-welcome-card .rating-strip-chip { max-width: 230px; height: 170px !important; }
+}
+
+@media (max-width: 680px) {
+  .pressure-welcome-card { display: block; }
+  .pressure-welcome-card .rating-strip-chip {
+    width: 100% !important;
+    max-width: none;
+    height: 170px !important;
+    margin-top: 20px;
+  }
+}
+
+@media print {
+  @page { size: A4 landscape; margin: 0; }
+  .report-document.landscape { width: 297mm !important; }
+  .report-document.landscape .report-page {
+    width: 297mm !important;
+    min-height: 210mm !important;
+    padding: 10mm 12mm !important;
+  }
+}
