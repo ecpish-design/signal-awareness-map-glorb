@@ -20,7 +20,7 @@
     recovery: { patterns: {}, helps: {} },
     pressureRatings: { sensory: {}, reminder: {}, situational: {}, relational: {} },
     reminderPresence: {},
-    screen: { name: 'home', params: {} },
+    screen: { name: 'landing', params: {} },
     history: [],
     activeFlow: [],
     activeFlowContext: null,
@@ -110,7 +110,7 @@
 
   function currentProgress() {
     const { name, params } = state.screen;
-    if (name === 'home') return 0;
+    if (name === 'landing' || name === 'home') return 0;
     if (name === 'glorbIntro') return 1;
     if (name === 'nameEntry') return 2;
     if (name === 'pathSelect') return 3;
@@ -155,7 +155,9 @@
   }
 
   function updateNav() {
-    backBtn.hidden = state.screen.name === 'home' || !state.history.length;
+    const landingActive = state.screen.name === 'landing';
+    document.getElementById('appShell')?.classList.toggle('landing-active', landingActive);
+    backBtn.hidden = landingActive || state.screen.name === 'home' || !state.history.length;
     exitBtn.style.opacity = state.dirty ? '1' : '.65';
     setProgress(currentProgress());
   }
@@ -165,6 +167,7 @@
     updateNav();
     const { name, params } = state.screen;
     const renderers = {
+      landing: renderLanding,
       home: renderHome,
       glorbIntro: renderGlorbIntro,
       nameEntry: renderNameEntry,
@@ -185,6 +188,48 @@
     const fn = renderers[name] || renderHome;
     fn();
     requestAnimationFrame(() => app.focus({ preventScroll: true }));
+  }
+
+  function renderLanding() {
+    app.innerHTML = `
+      <section class="signal-cover" aria-labelledby="signalCoverTitle">
+        <div class="signal-cover-noise" aria-hidden="true"></div>
+        <img class="signal-cover-background" src="assets/cover-background.png" alt="" aria-hidden="true" />
+        <img class="signal-cover-foreground" src="assets/cover.png" alt="" aria-hidden="true" />
+
+        <div class="signal-cover-frame" aria-hidden="true"></div>
+        <div class="signal-cover-ticks signal-cover-ticks-left" aria-hidden="true"></div>
+        <div class="signal-cover-ticks signal-cover-ticks-right" aria-hidden="true"></div>
+
+        <header class="signal-cover-header">
+          <div class="signal-cover-brand">GLORB // SIGNAL MAPPER</div>
+          <div class="signal-cover-data">
+            <span>MAPPING DATA</span>
+            <span class="signal-cover-data-track"><i></i></span>
+            <span>02</span>
+          </div>
+          <div class="signal-cover-tools" aria-hidden="true">
+            <span>ⓘ MORE INFORMATION</span>
+            <span>🔊 READ ALOUD</span>
+          </div>
+        </header>
+
+        <div class="signal-cover-content">
+          <p class="signal-cover-kicker">INCOMING TRANSMISSION</p>
+          <h1 id="signalCoverTitle">GLORB &amp; THE<br>SIGNAL<br>MAPPER</h1>
+
+          <div class="signal-cover-status" aria-hidden="true">
+            <span>SIGNAL</span>
+            <span class="signal-cover-blocks">${'<i></i>'.repeat(18)}</span>
+            <span>100%</span>
+          </div>
+
+          <p class="signal-cover-decoded">Transmission decoded.</p>
+          <button id="openMapper" class="signal-cover-open" type="button">OPEN MAPPER</button>
+        </div>
+      </section>`;
+
+    $('#openMapper', app).addEventListener('click', () => go('home'));
   }
 
   function renderHome() {

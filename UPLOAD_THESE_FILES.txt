@@ -1,0 +1,21 @@
+GLORB // SIGNAL MAPPER — COVER-ONLY PATCH
+
+Upload/replace ONLY these files on your new branch:
+
+REPLACE:
+- app.js
+- styles.css
+
+ADD:
+- assets/cover.png
+- assets/cover-background.png
+
+DO NOT replace:
+- index.html
+- data.js
+- any existing assets/1.png through assets/205.png
+
+What changed:
+- Added a new branded landing screen only.
+- OPEN MAPPER continues into the existing LET'S MAP YOUR SIGNALS onboarding.
+- Existing mapper logic, questions, pathways, reports, timestamps, PDF exports and existing assets are unchanged.
