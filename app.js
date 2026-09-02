@@ -155,9 +155,7 @@
   }
 
   function updateNav() {
-    const landingActive = state.screen.name === 'landing';
-    document.getElementById('appShell')?.classList.toggle('landing-active', landingActive);
-    backBtn.hidden = landingActive || state.screen.name === 'home' || !state.history.length;
+    backBtn.hidden = state.screen.name === 'landing' || state.screen.name === 'home' || !state.history.length;
     exitBtn.style.opacity = state.dirty ? '1' : '.65';
     setProgress(currentProgress());
   }
@@ -166,6 +164,7 @@
     closeSpeech();
     updateNav();
     const { name, params } = state.screen;
+    document.getElementById('appShell')?.classList.toggle('is-cover', name === 'landing');
     const renderers = {
       landing: renderLanding,
       home: renderHome,
@@ -185,50 +184,31 @@
       pressureReminderImpact: () => renderPressureReminderImpact(params.domainIndex || 0, params.itemIndex || 0),
       report: () => renderReportPreview(params.type || 'current')
     };
-    const fn = renderers[name] || renderHome;
+    const fn = renderers[name] || renderLanding;
     fn();
     requestAnimationFrame(() => app.focus({ preventScroll: true }));
   }
 
   function renderLanding() {
     app.innerHTML = `
-      <section class="signal-cover" aria-labelledby="signalCoverTitle">
-        <div class="signal-cover-noise" aria-hidden="true"></div>
-        <img class="signal-cover-background" src="assets/cover-background.png" alt="" aria-hidden="true" />
-        <img class="signal-cover-foreground" src="assets/cover.png" alt="" aria-hidden="true" />
-
-        <div class="signal-cover-frame" aria-hidden="true"></div>
-        <div class="signal-cover-ticks signal-cover-ticks-left" aria-hidden="true"></div>
-        <div class="signal-cover-ticks signal-cover-ticks-right" aria-hidden="true"></div>
-
-        <header class="signal-cover-header">
-          <div class="signal-cover-brand">GLORB // SIGNAL MAPPER</div>
-          <div class="signal-cover-data">
-            <span>MAPPING DATA</span>
-            <span class="signal-cover-data-track"><i></i></span>
-            <span>02</span>
+      <section class="signal-cover" aria-labelledby="coverTitle">
+        <img class="signal-cover__background" src="assets/cover-background.png" alt="" aria-hidden="true">
+        <img class="signal-cover__glorb" src="assets/cover.png" alt="Glorb, the Signal Mapper guide">
+        <div class="signal-cover__frame" aria-hidden="true"></div>
+        <div class="signal-cover__header">
+          <span>GLORB // SIGNAL MAPPER</span>
+          <span class="signal-cover__status">MAPPING DATA&nbsp;&nbsp;▰▰▰▰▱&nbsp;&nbsp;02</span>
+        </div>
+        <div class="signal-cover__content">
+          <p class="signal-cover__eyebrow">INCOMING TRANSMISSION</p>
+          <h1 id="coverTitle">GLORB &amp; THE<br>SIGNAL<br>MAPPER</h1>
+          <div class="signal-cover__meter" aria-hidden="true">
+            <span>SIGNAL</span><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><b>100%</b>
           </div>
-          <div class="signal-cover-tools" aria-hidden="true">
-            <span>ⓘ MORE INFORMATION</span>
-            <span>🔊 READ ALOUD</span>
-          </div>
-        </header>
-
-        <div class="signal-cover-content">
-          <p class="signal-cover-kicker">INCOMING TRANSMISSION</p>
-          <h1 id="signalCoverTitle">GLORB &amp; THE<br>SIGNAL<br>MAPPER</h1>
-
-          <div class="signal-cover-status" aria-hidden="true">
-            <span>SIGNAL</span>
-            <span class="signal-cover-blocks">${'<i></i>'.repeat(18)}</span>
-            <span>100%</span>
-          </div>
-
-          <p class="signal-cover-decoded">Transmission decoded.</p>
-          <button id="openMapper" class="signal-cover-open" type="button">OPEN MAPPER</button>
+          <p class="signal-cover__decoded">Transmission decoded.</p>
+          <button id="openMapper" class="signal-cover__button" type="button">OPEN MAPPER</button>
         </div>
       </section>`;
-
     $('#openMapper', app).addEventListener('click', () => go('home'));
   }
 

@@ -1,0 +1,15 @@
+GLORB // SIGNAL MAPPER — FINAL RESPONSIVE PACKAGE
+
+Replace only:
+- index.html
+- styles.css
+
+Do not replace:
+- app.js
+- data.js
+- assets/cover.png
+- assets/cover-background.png
+- assets/1.png through assets/205.png
+
+After GitHub Pages finishes deploying, close the previous Safari tab and reopen
+the site so the versioned stylesheet is fetched.
