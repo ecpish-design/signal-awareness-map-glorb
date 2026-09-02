@@ -1,13 +1,15 @@
-GLORB // SIGNAL MAPPER — FULL MOBILE SAFARI AUDIT
+GLORB // SIGNAL MAPPER — FINAL RESPONSIVE PACKAGE
 
 Replace only:
 - index.html
 - styles.css
 
-Do not replace app.js, data.js, or any image assets.
+Do not replace:
+- app.js
+- data.js
+- assets/cover.png
+- assets/cover-background.png
+- assets/1.png through assets/205.png
 
-The new responsive layer is scoped to screen widths of 680px and below.
-Desktop, iPad, print and PDF export layouts remain unchanged.
-
-After GitHub Pages deploys, close the existing Safari tab and reopen the URL in
-a new tab so the audited stylesheet is loaded.
+After GitHub Pages finishes deploying, close the previous Safari tab and reopen
+the site so the versioned stylesheet is fetched.
