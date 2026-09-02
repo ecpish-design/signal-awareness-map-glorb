@@ -1,0 +1,26 @@
+GLORB // SIGNAL MAPPER — MOBILE ADAPTIVE PATCH
+
+Replace these files in the same branch:
+- index.html
+- app.js
+- styles.css
+
+Add/keep these cover assets:
+- assets/cover.png
+- assets/cover-background.png
+
+Do not replace data.js or assets/1.png through assets/205.png.
+
+What changes on phones (680px and below):
+- The full text navigation becomes a single compact icon toolbar.
+- The short GLORB // MAP brand replaces the long research-division label.
+- The header shrinks from 164px to 68px.
+- The landing page uses a mobile-specific crop and hierarchy.
+- Secondary telemetry and decorative meter content is removed.
+- Safe-area spacing is included for notched iPhones.
+
+What remains unchanged:
+- Desktop and iPad presentation.
+- Existing onboarding after OPEN MAPPER.
+- All pathways, questions, response state and conditional logic.
+- Reports, timestamps, PDF/ZIP exports and numbered assets.
