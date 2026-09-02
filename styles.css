@@ -523,6 +523,18 @@ h1, h2, h3, p { margin-top: 0; }
   .report-page { box-shadow: none; }
 }
 
+/* Final phone-cover override: remove only the foreground Glorb layer.
+   Equivalent spacing is transferred to the content so its approved position stays fixed. */
+@media screen and (max-width: 680px) {
+  .is-cover .signal-cover__glorb {
+    display: none !important;
+  }
+
+  .is-cover .signal-cover__content {
+    padding-top: calc(env(safe-area-inset-top) + 78px + 17svh) !important;
+  }
+}
+
 .report-root {
   position: fixed;
   left: -100000px;
@@ -1141,3 +1153,417 @@ h1, h2, h3, p { margin-top: 0; }
 
 /* Timestamp footer for every generated PDF page. */
 #reportRoot.pdf-export .report-generated { right: 12mm; bottom: 4mm; font-size: 6.8pt !important; }
+
+/* =========================================================
+   MOBILE SAFARI AUDIT — PHONE-ONLY ADAPTIVE LAYER
+   This final layer intentionally applies at 680px and below.
+   Desktop, iPad, print and hidden PDF-export layouts are unchanged.
+   ========================================================= */
+@media screen and (max-width: 680px) {
+  html {
+    width: 100%;
+    min-height: 100%;
+    overflow-x: hidden;
+    -webkit-text-size-adjust: 100%;
+    text-size-adjust: 100%;
+  }
+
+  body {
+    width: 100%;
+    min-height: 100%;
+    overflow-x: hidden;
+    overscroll-behavior-x: none;
+  }
+
+  button,
+  input,
+  textarea { font-size: max(16px, 1em); }
+
+  img { max-width: 100%; height: auto; }
+
+  :root { --topbar-h: 68px; }
+
+  .app-shell {
+    width: 100%;
+    min-height: 100vh;
+    min-height: 100dvh;
+  }
+
+  .topbar {
+    width: 100%;
+    min-height: var(--topbar-h);
+    padding: 8px max(10px, env(safe-area-inset-right)) 8px max(10px, env(safe-area-inset-left));
+    align-items: center;
+    gap: 4px;
+  }
+
+  .brand { flex: 0 1 auto; min-width: 0; }
+  .topnav { min-width: 0; max-width: none; }
+  .nav-btn { flex: 0 0 40px; touch-action: manipulation; }
+
+  .global-progress {
+    top: var(--topbar-h);
+    height: 4px;
+  }
+
+  .app-main { width: 100%; min-width: 0; }
+  .screen,
+  .screen-fit {
+    width: 100%;
+    height: auto;
+    max-height: none;
+    min-height: calc(100vh - var(--topbar-h) - 4px);
+    min-height: calc(100dvh - var(--topbar-h) - 4px);
+    margin: 0;
+    padding: 14px 10px calc(24px + env(safe-area-inset-bottom));
+    overflow: visible;
+  }
+
+  .overline {
+    font-size: 12px;
+    line-height: 1.35;
+    letter-spacing: .14em;
+    overflow-wrap: anywhere;
+  }
+
+  .readable-page-title,
+  .readable-display,
+  .selection-panel h1,
+  .transition-card h1,
+  .transition-card-left h1,
+  .text-screen h1,
+  .pressure-intro-copy h1 {
+    font-size: clamp(30px, 9.2vw, 42px) !important;
+    line-height: 1.02 !important;
+    letter-spacing: -.035em !important;
+    overflow-wrap: break-word;
+  }
+
+  .body-copy,
+  .transition-card p,
+  .transition-card-left p,
+  .pressure-intro-copy p { font-size: 17px; line-height: 1.45; }
+
+  .primary-btn,
+  .secondary-btn {
+    width: 100%;
+    min-height: 54px;
+    padding: 13px 16px;
+    text-align: center;
+    touch-action: manipulation;
+  }
+
+  .button-row { width: 100%; gap: 9px; }
+  .button-row > * { flex: 1 1 100%; }
+
+  /* Cover: remove only its foreground character and retain the approved spacing. */
+  .is-cover .signal-cover__glorb { display: none !important; }
+  .is-cover .signal-cover__content {
+    width: 100%;
+    margin: 0;
+    padding: calc(env(safe-area-inset-top) + 78px + 17svh) 22px calc(env(safe-area-inset-bottom) + 28px) !important;
+    text-align: center;
+  }
+  .signal-cover__header { left: 18px; right: 18px; }
+  .signal-cover h1 {
+    width: 100%;
+    margin: 0 auto;
+    font-size: clamp(46px, 14.5vw, 66px);
+    text-align: center;
+  }
+  .signal-cover__meter,
+  .signal-cover__button { width: min(100%, 500px); margin-left: auto; margin-right: auto; }
+
+  /* Onboarding and name entry. */
+  .onboarding-screen { align-items: flex-start; }
+  .onboarding-card,
+  .glorb-intro-card,
+  .name-entry-card,
+  .warning-screen-card {
+    width: 100%;
+    min-height: auto;
+    margin: 0;
+    padding: 26px 20px;
+  }
+  .onboarding-title { min-height: 0; font-size: clamp(40px, 12vw, 54px); margin-bottom: 20px; }
+  .onboarding-copy { min-height: 0; font-size: 19px; line-height: 1.42; margin-bottom: 24px; }
+  .glorb-intro-visual {
+    width: 100%;
+    height: min(31svh, 250px);
+    margin-bottom: 22px;
+    padding: 10px;
+  }
+  .glorb-intro-visual img { width: 100%; height: 100%; max-height: none; object-fit: contain; }
+  .name-input,
+  .name-input-large {
+    min-height: 58px;
+    padding: 12px 14px;
+    font-size: 18px;
+    margin-bottom: 18px;
+  }
+  .warning-box,
+  .warning-box-large { padding: 16px; font-size: 16px; }
+
+  /* Pathway choice and feeling selection. */
+  .selection-panel {
+    width: 100%;
+    min-height: 0;
+    padding: 24px 16px 28px;
+  }
+  .path-grid,
+  .selection-panel .path-grid {
+    grid-template-columns: 1fr !important;
+    gap: 12px;
+    margin-top: 18px;
+  }
+  .path-card,
+  .selection-panel .path-card {
+    min-height: 0 !important;
+    padding: 20px 18px;
+    gap: 18px;
+  }
+  .path-card h2 { font-size: 25px; line-height: 1.05; }
+  .path-card p { font-size: 16px; }
+  .time-estimate { margin-top: 12px !important; }
+
+  .signal-selection-screen { padding-top: 12px; }
+  .signal-orientation {
+    width: 100%;
+    min-height: 0;
+    margin-bottom: 10px;
+    padding: 14px;
+    grid-template-columns: 1fr;
+  }
+  .signal-orientation-copy { display: block; }
+  .signal-orientation .signal-pill { min-width: 0; margin-bottom: 8px; padding: 10px 13px; }
+  .signal-orientation p { font-size: 15px; }
+  .signal-orientation-image { display: none; }
+
+  .feeling-grid,
+  .feeling-grid.all {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 9px;
+    margin-top: 16px;
+  }
+  .feeling-card {
+    min-width: 0;
+    min-height: 148px;
+    padding: 9px 7px;
+  }
+  .feeling-card img { height: 98px; }
+  .feeling-card span { font-size: 14px; overflow-wrap: anywhere; }
+
+  /* Transition and free-text screens. */
+  .transition-wrap { height: auto; min-height: 0; align-items: flex-start; }
+  .transition-card,
+  .transition-card-left,
+  .pressure-welcome-card {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    min-height: 0;
+    padding: 24px 18px;
+    gap: 0;
+    text-align: left;
+  }
+  .transition-card-left .emotion-chip,
+  .pressure-welcome-card .rating-strip-chip {
+    order: -1;
+    width: 100% !important;
+    max-width: 100%;
+    height: min(28svh, 210px) !important;
+    margin: 0 0 20px;
+    padding: 8px;
+    align-self: stretch;
+  }
+  .transition-card-left .primary-btn { justify-self: auto; }
+  .text-screen {
+    width: 100%;
+    height: auto;
+    min-height: 0;
+    padding: 24px 18px;
+  }
+  .text-area { min-height: 180px; padding: 14px; font-size: 18px; }
+
+  /* One-question pattern screens. */
+  .question-screen { display: block; color: #fff; }
+  .question-head { padding: 0 4px 12px; }
+  .question-title {
+    font-size: clamp(27px, 8.2vw, 38px) !important;
+    line-height: 1.04 !important;
+    letter-spacing: -.025em !important;
+  }
+  .question-card-shell,
+  .rating-shell {
+    display: block;
+    width: 100%;
+    min-height: 0;
+    padding: 12px;
+  }
+  .visual-card,
+  .rating-visual {
+    width: 100%;
+    height: min(32svh, 265px);
+    min-height: 180px;
+    margin-bottom: 12px;
+    padding: 8px;
+  }
+  .visual-card img,
+  .rating-visual img {
+    width: 100%;
+    height: 100%;
+    max-height: none;
+    object-fit: contain;
+  }
+  .answer-row {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 8px;
+    min-height: 0;
+  }
+  .answer-btn {
+    min-width: 0;
+    min-height: 62px;
+    padding: 10px 7px;
+    font-size: 15px;
+    line-height: 1.18;
+    touch-action: manipulation;
+  }
+
+  .rating-row {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 8px;
+  }
+  .rating-btn {
+    min-width: 0;
+    min-height: 118px;
+    padding: 7px;
+    touch-action: manipulation;
+  }
+  .rating-btn img { height: 76px; }
+  .rating-label { font-size: 12px; }
+
+  /* Pressure introductions. */
+  .pressure-welcome-screen {
+    min-height: calc(100dvh - var(--topbar-h) - 4px);
+    padding: 14px 10px calc(24px + env(safe-area-inset-bottom));
+  }
+  .pressure-intro {
+    display: block;
+    height: auto;
+  }
+  .pressure-intro-visual {
+    display: grid;
+    width: 100%;
+    height: min(27svh, 205px);
+    margin-bottom: 20px;
+    padding: 8px;
+    place-items: center;
+  }
+  .pressure-intro-visual img { width: 100%; height: 100%; max-height: none; object-fit: contain; }
+
+  /* Information modal. */
+  .modal-backdrop {
+    align-items: stretch;
+    padding: max(8px, env(safe-area-inset-top)) 8px max(8px, env(safe-area-inset-bottom));
+  }
+  .modal-card {
+    width: 100%;
+    max-height: calc(100dvh - max(16px, env(safe-area-inset-top)) - max(16px, env(safe-area-inset-bottom)));
+    border-radius: 0;
+    -webkit-overflow-scrolling: touch;
+  }
+  .modal-head { padding: 12px 14px; }
+  .modal-head h2 { font-size: 20px; }
+  .modal-body { padding: 16px 12px 24px; }
+  .info-choice { grid-template-columns: 1fr; gap: 10px; }
+  .info-choice button { min-height: 0; padding: 20px 16px; }
+  .info-choice h3 { font-size: 25px; }
+  .info-section { padding: 17px 14px; }
+  .info-section h2 { font-size: 27px; }
+  .info-section h3 { font-size: 20px; }
+  .info-section p,
+  .info-section li { font-size: 16px; overflow-wrap: anywhere; }
+  .info-scale { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .framework-info-visual { display: block; }
+  .framework-info-visual img { margin-top: 16px; }
+  .math-box,
+  .references { overflow-wrap: anywhere; word-break: break-word; }
+
+  /* On-screen report preview only. Hidden export pages retain exact A4 sizing. */
+  .report-preview-wrap {
+    width: 100%;
+    padding: 12px 8px calc(36px + env(safe-area-inset-bottom));
+    overflow-x: hidden;
+  }
+  .report-actions {
+    position: static;
+    width: 100%;
+    margin-bottom: 12px;
+    gap: 8px;
+  }
+  .report-actions > * { flex: 1 1 100%; }
+  .app-main .report-document,
+  .app-main .report-document.landscape,
+  .app-main .report-document.portrait {
+    width: 100%;
+    max-width: 100%;
+    margin: 0;
+    box-shadow: none;
+  }
+  .app-main .report-page,
+  .app-main .report-document.landscape .report-page,
+  .app-main .report-document.portrait .report-page {
+    width: 100%;
+    min-height: 0 !important;
+    padding: 22px 16px 38px;
+    overflow-wrap: anywhere;
+  }
+  .app-main .report-page h1 { font-size: 29px; }
+  .app-main .report-page h2 { font-size: 22px; }
+  .app-main .report-page h3 { font-size: 17px; }
+  .app-main .report-page p,
+  .app-main .report-page li { font-size: 14px; line-height: 1.4; }
+  .app-main .report-generated { right: 16px; bottom: 12px; }
+  .app-main .signal-report-grid,
+  .app-main .signal-columns.five,
+  .app-main .signal-definition-grid,
+  .app-main .support-path-grid,
+  .app-main .quick-guide-grid,
+  .app-main .pressure-grid-two,
+  .app-main .student-pressure-grid,
+  .app-main .student-detail-grid,
+  .app-main .student-overview-row,
+  .app-main .research-two-col,
+  .app-main .framework-report-box,
+  .app-main .guide-page .framework-report-box,
+  .app-main .guide-page .signal-definition-grid {
+    grid-template-columns: 1fr;
+  }
+  .app-main .single-feeling-report-head { grid-template-columns: 74px 1fr; }
+  .app-main .single-feeling-report-head img { width: 70px; height: 70px; }
+  .app-main .signal-column-head,
+  .app-main .signal-definition,
+  .app-main .path-stage,
+  .app-main .quick-guide-grid > div,
+  .app-main .pressure-summary-card { min-height: 0; }
+  .app-main .pathway-graphic { display: none; }
+  .app-main .severity-meter { grid-template-columns: 1fr; gap: 6px; }
+  .app-main .report-table { display: block; overflow-x: auto; -webkit-overflow-scrolling: touch; }
+  .app-main .report-card-sheet { grid-template-columns: 1fr; }
+  .app-main .cut-card { height: auto; min-height: 0; }
+
+  .toast {
+    width: calc(100% - 24px);
+    bottom: calc(12px + env(safe-area-inset-bottom));
+    text-align: center;
+  }
+}
+
+@media screen and (max-width: 390px) {
+  .topbar:has(#backBtn:not([hidden])) .brand { display: none; }
+  .topnav { margin-left: auto; }
+  .nav-btn { flex-basis: 38px; width: 38px; min-width: 38px; }
+  .signal-cover h1 { font-size: clamp(43px, 14vw, 55px); }
+  .feeling-card { min-height: 140px; }
+  .feeling-card img { height: 91px; }
+}

@@ -1,11 +1,13 @@
-GLORB // SIGNAL MAPPER — REMOVE GLORB ON MOBILE
+GLORB // SIGNAL MAPPER — FULL MOBILE SAFARI AUDIT
 
-Replace only styles.css in the branch containing the mobile adaptive patch.
+Replace only:
+- index.html
+- styles.css
 
-At 680px and below, the foreground Glorb image is hidden while its layout space
-is preserved. This keeps the eyebrow, title, Signal meter, decoded message and
-OPEN MAPPER button in exactly the same positions shown in the approved mobile
-layout.
+Do not replace app.js, data.js, or any image assets.
 
-Glorb remains visible on iPad and desktop. No application logic, navigation,
-reports, exports, data or assets are changed.
+The new responsive layer is scoped to screen widths of 680px and below.
+Desktop, iPad, print and PDF export layouts remain unchanged.
+
+After GitHub Pages deploys, close the existing Safari tab and reopen the URL in
+a new tab so the audited stylesheet is loaded.
