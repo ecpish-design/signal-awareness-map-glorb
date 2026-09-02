@@ -1,26 +1,11 @@
-GLORB // SIGNAL MAPPER — MOBILE ADAPTIVE PATCH
+GLORB // SIGNAL MAPPER — MOBILE CENTRING FIX
 
-Replace these files in the same branch:
-- index.html
-- app.js
-- styles.css
+Replace only styles.css in the branch containing the mobile adaptive patch.
 
-Add/keep these cover assets:
-- assets/cover.png
-- assets/cover-background.png
+This correction applies only at 680px and below:
+- stacks the foreground Glorb artwork above the landing content;
+- centres Glorb and the complete landing-page content column;
+- centres the eyebrow, title, Signal meter, decoded message and button;
+- gives the meter and button matching maximum widths.
 
-Do not replace data.js or assets/1.png through assets/205.png.
-
-What changes on phones (680px and below):
-- The full text navigation becomes a single compact icon toolbar.
-- The short GLORB // MAP brand replaces the long research-division label.
-- The header shrinks from 164px to 68px.
-- The landing page uses a mobile-specific crop and hierarchy.
-- Secondary telemetry and decorative meter content is removed.
-- Safe-area spacing is included for notched iPhones.
-
-What remains unchanged:
-- Desktop and iPad presentation.
-- Existing onboarding after OPEN MAPPER.
-- All pathways, questions, response state and conditional logic.
-- Reports, timestamps, PDF/ZIP exports and numbered assets.
+Desktop, iPad, Mapper logic, navigation, reports, exports and assets are unchanged.
