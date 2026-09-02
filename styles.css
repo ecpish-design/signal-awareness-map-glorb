@@ -485,7 +485,8 @@ h1, h2, h3, p { margin-top: 0; }
     margin: calc(env(safe-area-inset-top) + 66px) auto 0;
     object-fit: contain;
     object-position: center;
-    opacity: .92;
+    opacity: 0;
+    visibility: hidden;
   }
   .signal-cover__content { width: 100%; margin: 0; padding: 12px 28px calc(env(safe-area-inset-bottom) + 30px); text-align: center; }
   .signal-cover__eyebrow { margin-bottom: 12px; font-size: 10px; text-align: center; }

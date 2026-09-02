@@ -1,11 +1,11 @@
-GLORB // SIGNAL MAPPER — MOBILE CENTRING FIX
+GLORB // SIGNAL MAPPER — REMOVE GLORB ON MOBILE
 
 Replace only styles.css in the branch containing the mobile adaptive patch.
 
-This correction applies only at 680px and below:
-- stacks the foreground Glorb artwork above the landing content;
-- centres Glorb and the complete landing-page content column;
-- centres the eyebrow, title, Signal meter, decoded message and button;
-- gives the meter and button matching maximum widths.
+At 680px and below, the foreground Glorb image is hidden while its layout space
+is preserved. This keeps the eyebrow, title, Signal meter, decoded message and
+OPEN MAPPER button in exactly the same positions shown in the approved mobile
+layout.
 
-Desktop, iPad, Mapper logic, navigation, reports, exports and assets are unchanged.
+Glorb remains visible on iPad and desktop. No application logic, navigation,
+reports, exports, data or assets are changed.
